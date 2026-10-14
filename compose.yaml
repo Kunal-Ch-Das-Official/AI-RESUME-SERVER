@@ -1,0 +1,42 @@
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: airesume-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - airesume-internal
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airesume-backend:latest
+    container_name: airesume-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    init: true
+    networks:
+      - airesume-internal
+
+volumes:
+  redis_data:
+
+networks:
+  airesume-internal:
+    driver: bridge
