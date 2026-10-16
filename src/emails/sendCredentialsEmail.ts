@@ -7,87 +7,122 @@ export interface MailResult {
   details?: string;
 }
 
-/**
- * Sends auto-generated login credentials to a newly registered or logged-in user on AI Resume.
- *
- * @param userEmail - The recipient's email address
- * @param userPassword - The auto-generated secure password
- * @param senderId - Optional sender email override (defaults to SMTP_SENDER from env)
- */
 const sendCredentialsEmail = async (
   userEmail: string,
   userPassword: string,
-  senderId: string = envConfig.SMTP_SENDER,
+  businessEmail: string = envConfig.SMTP_BUSINESS_EMAIL ||
+    "team@ai-resume.download",
 ): Promise<MailResult> => {
   try {
     const transporter = nodemailer.createTransport({
-      host: envConfig.SMTP_PROTOCOL,
+      host: envConfig.SMTP_PROTOCOL || "smtp.gmail.com",
       port: Number(envConfig.SMTP_PORT || 465),
       secure: true,
       auth: {
-        user: senderId,
+        user: envConfig.SMTP_SENDER || "rsc12162025@gmail.com",
         pass: envConfig.SMTP_PASS,
       },
-      authMethod: "PLAIN",
     });
 
     const mailSubject = "Your AI-Resume Portal Access Credentials";
 
-    // High-security responsive HTML email template
     const emailTemplate = `
-      <!DOCTYPE html>
-      <html>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; margin: 0; padding: 0; }
-            .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-            .header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px; text-align: center; color: #ffffff; }
-            .header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.025em; }
-            .content { padding: 32px; }
-            .credential-box { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; margin: 20px 0; font-family: monospace; font-size: 14px; color: #0f172a; }
-            .credential-item { margin-bottom: 8px; }
-            .credential-item:last-child { margin-bottom: 0; }
-            .warning-box { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 12px; color: #92400e; margin-top: 20px; }
-            .footer { padding: 20px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
-          </style>
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>${mailSubject}</title>
         </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Welcome to AI-Resume!</h1>
-            </div>
-            <div class="content">
-              <p>Hello,</p>
-              <p>Your secure account has been created successfully on the <strong>AI-Resume</strong> portal. Below are your temporary system-generated login credentials:</p>
+        <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 40px 15px;">
+            <tr>
+              <td align="center">
+                <!-- Main Container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
 
-              <div class="credential-box">
-                <div class="credential-item"><strong>Email / User ID:</strong> ${userEmail}</div>
-                <div class="credential-item"><strong>Password:</strong> ${userPassword}</div>
-              </div>
+                  <!-- Logo Header -->
+                  <tr>
+                    <td align="center" style="padding: 36px 30px 24px 30px; background-color: #0f172a;">
+                      <img src="https://res.cloudinary.com/dtlwabk09/image/upload/v1792162485/resume_craft_logo_tkfekw.webp" alt="AI-Resume Logo" width="160" style="display: block; border: 0; outline: none; text-decoration: none; max-width: 160px; height: auto;" />
+                    </td>
+                  </tr>
 
-              <p>You can use these credentials to sign in to your workspace, build ATS-optimized resumes, and manage your documents securely.</p>
+                  <!-- Hero Title & Body -->
+                  <tr>
+                    <td style="padding: 36px 32px 20px 32px; color: #1e293b;">
+                      <h1 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                        Welcome to AI-Resume!
+                      </h1>
+                      <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #475569;">
+                        Your account has been created. Here are your temporary system-generated login credentials to access your workspace and resume dashboard:
+                      </p>
 
-              <div class="warning-box">
-                <strong>Security Notice:</strong> Please save this password in a secure password manager immediately. For your security, we recommend changing your password right after your first login.
-              </div>
-            </div>
-            <div class="footer">
-              &copy; 2026 AI-Resume Portal. All rights reserved. This is an automated security transmission.
-            </div>
-          </div>
+                      <!-- Credentials Card -->
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 24px 0;">
+                        <tr>
+                          <td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #64748b; font-weight: 600;">
+                            Login Email
+                          </td>
+                          <td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; font-family: monospace; font-weight: 600;" align="right">
+                            ${userEmail}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 16px 20px; font-size: 14px; color: #64748b; font-weight: 600;">
+                            Temporary Password
+                          </td>
+                          <td style="padding: 16px 20px; font-size: 14px; color: #2563eb; font-family: monospace; font-weight: 700; letter-spacing: 0.5px;" align="right">
+                            ${userPassword}
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Action Button -->
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 28px 0 10px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${envConfig.CLIENT_URL || "https://ai-resume.download"}" target="_blank" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 13px 32px; border-radius: 8px;">
+                              Sign In to Workspace
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Advisory Note -->
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px; background-color: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 0 8px 8px 0;">
+                        <tr>
+                          <td style="padding: 12px 16px; font-size: 13px; color: #92400e; line-height: 1.5;">
+                            <strong>Security Tip:</strong> Please store your password safely and update it under account settings immediately after your first sign-in.
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="padding: 24px 32px 32px 32px; border-top: 1px solid #f1f5f9; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;">
+                      <p style="margin: 0 0 6px 0;">This email was sent by <strong>AI-Resume</strong>.</p>
+                      <p style="margin: 0;">&copy; 2026 AI-Resume. All rights reserved.</p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
         </body>
       </html>
     `;
 
     const info = await transporter.sendMail({
-      from: `AI-Resume Security <${senderId}>`,
+      from: `"AI-Resume" <${businessEmail}>`,
+      replyTo: businessEmail,
       to: userEmail,
       subject: mailSubject,
       html: emailTemplate,
     });
-
-    console.log("Credentials email sent successfully:", info.response);
 
     return {
       success: true,
@@ -96,7 +131,6 @@ const sendCredentialsEmail = async (
     };
   } catch (error: unknown) {
     console.error("Error sending credentials email:", error);
-
     return {
       success: false,
       message: "Failed to send credentials email.",

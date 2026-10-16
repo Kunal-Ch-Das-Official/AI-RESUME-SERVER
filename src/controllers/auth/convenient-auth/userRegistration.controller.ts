@@ -3,6 +3,7 @@ import crypto from "crypto";
 import UserModel from "../../../models/usersData.js";
 import { userRegistrationSchema } from "../../../schema/auth.schema.js";
 import sendCredentialsEmail from "../../../emails/sendCredentialsEmail.js";
+import envConfig from "../../../config/envConfig.js";
 
 const convenientUserRegistrationCtrl: IController<
   typeof userRegistrationSchema
@@ -40,7 +41,12 @@ const convenientUserRegistrationCtrl: IController<
   }
 
   // 3. Attempt to send the auto-generated plaintext credentials email
-  const mailResult = await sendCredentialsEmail(emailId, rawPassword);
+  // 3. Attempt to send the auto-generated plaintext credentials email
+  const mailResult = await sendCredentialsEmail(
+    emailId,
+    rawPassword,
+    envConfig.SMTP_BUSINESS_EMAIL || "team@airesume.download",
+  );
 
   // 4. If email fails, roll back database creation with up to 5 retry attempts
   if (!mailResult.success) {

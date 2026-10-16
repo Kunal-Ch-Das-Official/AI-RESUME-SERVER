@@ -24,12 +24,12 @@ const environment = {
   SMTP_PORT: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 465,
   SMTP_SENDER: (process.env.SMTP_SENDER as string) || "",
   SMTP_PASS: (process.env.SMTP_PASS as string) || "",
+  SMTP_BUSINESS_EMAIL: (process.env.SMTP_BUSINESS_EMAIL as string) || "",
 
   CLOUDINARY_CLOUD_NAME: (process.env.CLOUDINARY_CLOUD_NAME as string) || "",
   CLOUDINARY_API_KEY: (process.env.CLOUDINARY_API_KEY as string) || "",
   CLOUDINARY_CLOUD_SECRET:
     (process.env.CLOUDINARY_CLOUD_SECRET as string) || "",
-  GOOGLE_GEMINI_API_KEY:process.env.GOOGLE_GEMINI_API_KET as string || ""
 };
 const envConfig = Object.freeze(environment);
 export default envConfig;

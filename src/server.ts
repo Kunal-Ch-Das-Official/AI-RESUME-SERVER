@@ -1,9 +1,8 @@
 import { Subatom, SubAtomDocs, type ISubatom, type IRequest, type IResponse, serveStatic, cors } from "subatom";
 import { getIO } from "./web-socket/socket.js";
-// import userRouter from "./routes/user.route.js";
-// import authRouter from "./routes/auth.route.js";
 import resumeRouter from "./routes/resume.route.js";
 import authRouter from "./routes/auth.route.js";
+import envConfig from "./config/envConfig.js";
 
 const server: ISubatom = new Subatom();
 
@@ -11,7 +10,7 @@ const server: ISubatom = new Subatom();
 server.use(serveStatic("public"))
 
 server.use(cors({
-  origin: "http://localhost:3000",
+  origin: envConfig.CLIENT_URL,
   methods: ["POST", "PUT", "GET", "PATCH", "DELETE"],
   credentials: true, // Recommended if you are sending cookies or headers
 }));

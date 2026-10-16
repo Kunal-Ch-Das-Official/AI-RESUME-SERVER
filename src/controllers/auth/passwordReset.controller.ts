@@ -39,18 +39,38 @@ const sendPasswordResetLinkController: IController<
     const resetLink = `${envConfig.CLIENT_URL}/reset-password/${isUserExist._id}/${resetToken}`;
 
     try {
-      await sendAlertMessage(
+      const mailResult = await sendAlertMessage(
         isUserExist.emailId,
-        envConfig.SMTP_SENDER,
         "Password Reset Request - AI-Resume",
         `
-        <p>Dear ${isUserExist.userName || "User"},</p>
-        <p>We received a request to reset your password. Please click the link below to set a new password. This link is valid for 15 minutes.</p>
-        <p><a href="${resetLink}" target="_blank" style="color: #2563eb;">Reset Your Password</a></p>
-        <p>If you did not request a password reset, please ignore this email.</p>
-        <p>Best regards,<br/>AI-Resume Team</p>
-        `,
+  <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0f172a;">Password Reset Request</h2>
+  <p style="margin: 0 0 14px 0; color: #475569;">Hello ${isUserExist.userName || "there"},</p>
+  <p style="margin: 0 0 24px 0; color: #475569;">We received a request to reset your password. Click the button below to set a new password. This link is valid for <strong>15 minutes</strong>.</p>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 28px 0;">
+    <tr>
+      <td align="center">
+        <a href="${resetLink}" target="_blank" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 13px 32px; border-radius: 8px;">
+          Reset Password
+        </a>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin: 24px 0 0 0; font-size: 13px; color: #64748b;">If you did not request a password reset, you can safely ignore this email.</p>
+  `,
+        envConfig.SMTP_BUSINESS_EMAIL,
       );
+
+      if (!mailResult.success) {
+        console.error(
+          "Failed to send password reset email:",
+          mailResult.details,
+        );
+        return ctx.helper.internal_server_error(
+          "Unable to send email, Please try again later.",
+        );
+      }
     } catch (error: unknown) {
       console.error(
         "Failed to send password reset email:",
@@ -116,14 +136,18 @@ const resetForgottenPassword: IController<typeof resetPasswordSchema> = async (
     try {
       await sendAlertMessage(
         isValidUser.emailId,
-        envConfig.SMTP_SENDER,
         "Password Successfully Reset - AI-Resume",
         `
-        <p>Dear ${isValidUser.fullName || "User"},</p>
-        <p>Your password has been successfully reset.</p>
-        <p>If you did not initiate this change, please contact our support team immediately.</p>
-        <p>Best regards,<br/>AI-Resume Team</p>
-        `,
+  <h2 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #0f172a;">Password Changed Successfully</h2>
+  <p style="margin: 0 0 14px 0; color: #475569;">Hello ${isValidUser.fullName || isValidUser.userName || "there"},</p>
+  <p style="margin: 0 0 16px 0; color: #475569;">The password for your AI-Resume account was successfully updated.</p>
+  <div style="background-color: #fff1f2; border-left: 4px solid #f43f5e; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 20px;">
+    <p style="margin: 0; font-size: 13px; color: #9f1239;">
+      <strong>Security Alert:</strong> If you did not make this change, please contact support at <a href="mailto:${envConfig.SMTP_BUSINESS_EMAIL || "team@ai-resume.download"}" style="color: #9f1239; font-weight: 600;">${envConfig.SMTP_BUSINESS_EMAIL || "team@ai-resume.download"}</a> immediately.
+    </p>
+  </div>
+  `,
+        envConfig.SMTP_BUSINESS_EMAIL,
       );
     } catch (error: unknown) {
       console.error(
