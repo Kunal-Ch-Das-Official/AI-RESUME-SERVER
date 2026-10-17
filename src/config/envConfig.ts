@@ -30,6 +30,10 @@ const environment = {
   CLOUDINARY_API_KEY: (process.env.CLOUDINARY_API_KEY as string) || "",
   CLOUDINARY_CLOUD_SECRET:
     (process.env.CLOUDINARY_CLOUD_SECRET as string) || "",
+
+  RAZORPAY_KEY_ID:   (process.env.RAZORPAY_KEY_ID as string) || "",
+  RAZORPAY_KEY_SECRET:(process.env.RAZORPAY_KEY_SECRET as string) || "",
+  RAZORPAY_WEBHOOK_SECRET: (process.env.RAZORPAY_WEBHOOK_SECRET as string) || "",
 };
 const envConfig = Object.freeze(environment);
 export default envConfig;

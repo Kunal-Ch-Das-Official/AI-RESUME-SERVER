@@ -3,6 +3,7 @@ import { getIO } from "./web-socket/socket.js";
 import resumeRouter from "./routes/resume.route.js";
 import authRouter from "./routes/auth.route.js";
 import envConfig from "./config/envConfig.js";
+import paymentRouter from "./routes/payment.route.js";
 
 const server: ISubatom = new Subatom();
 
@@ -35,6 +36,7 @@ server.get("/metrics", async (_req:IRequest, res:IResponse) => {
 // server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRouter)
 server.use("/api/v1/resume", resumeRouter)
+server.use("/api/v1/payment", paymentRouter);
 
 // API Documentation at /docs
 SubAtomDocs(server, {

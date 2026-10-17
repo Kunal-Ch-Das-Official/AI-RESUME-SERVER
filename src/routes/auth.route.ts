@@ -1,6 +1,7 @@
 import { type IRouter, Router } from "subatom";
 import {
   fetchUserSchema,
+  myPaymentSchema,
   myResumeSchema,
   passwordResetLinkSendSchema,
   passwordUpdateSchema,
@@ -19,9 +20,9 @@ import {
   sendPasswordResetLinkController,
 } from "../controllers/auth/passwordReset.controller.js";
 import convenientUserRegistrationCtrl from "../controllers/auth/convenient-auth/userRegistration.controller.js";
-import addNewResumeController from "../controllers/auth/my-resune/addNewResume.controller.js";
+import addNewResumeController from "../controllers/auth/my-resume/addNewResume.controller.js";
 import fetchUsersController from "../controllers/auth/fetchUsers.controller.js";
-
+import addNewPaymentController from "../controllers/auth/my-payments/addNewPayment.controller.js";
 
 const authRouter: IRouter = new Router();
 
@@ -47,14 +48,12 @@ authRouter.get("/user", {
   controller: loggedInUserController,
 });
 
-
 authRouter.get("/users/:userId", {
   name: "auh.fetch.users",
   tags: ["Authentication"],
   schema: fetchUserSchema,
-  controller: fetchUsersController
-
-})
+  controller: fetchUsersController,
+});
 authRouter.post("/logout", {
   name: "auth.logout",
   tags: ["Authentication"],
@@ -97,5 +96,13 @@ authRouter.post("/add-resume-id", {
   tags: ["Add-My-Resume"],
   schema: myResumeSchema,
   controller: addNewResumeController,
+});
+
+authRouter.post("/add-payment-id", {
+  name: "add.my.payment.id",
+  tags: ["Add-My-Payment"],
+  schema: myPaymentSchema,
+  middleware: [authorizationMiddleware],
+  controller: addNewPaymentController,
 });
 export default authRouter;

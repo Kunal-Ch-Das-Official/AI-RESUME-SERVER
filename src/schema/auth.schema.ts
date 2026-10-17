@@ -49,6 +49,13 @@ const myResumeSchema = {
   },
 };
 
+const myPaymentSchema = {
+  body: {
+    payment_id: infer.string().min(3)
+  },
+};
+
+
 const fetchUserSchema ={
 params: {
   userId:infer.string().optional()
@@ -62,5 +69,6 @@ export {
   passwordResetLinkSendSchema,
   resetPasswordSchema,
   myResumeSchema,
+  myPaymentSchema,
   fetchUserSchema
 };

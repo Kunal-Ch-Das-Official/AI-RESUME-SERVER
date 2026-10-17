@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// 1. Interface representing the raw user data
 export interface IUser {
   userName: string;
   emailId: string;
@@ -8,16 +7,13 @@ export interface IUser {
   age: number;
   password: string;
   myResume: string[];
-  //   avatar?: {
-  //     access_url: string;
-  //     public_key: string;
-  //   } | null;
+  paymentHistory: string[];
+  resumeCredits: number;
+  activePlan: string | null;
 }
 
-// 2. Interface representing the Mongoose document
 export interface IUserData extends IUser, Document {}
 
-// 3. Schema definition
 const UserSchema: Schema<IUserData> = new Schema<IUserData>(
   {
     userName: {
@@ -26,7 +22,6 @@ const UserSchema: Schema<IUserData> = new Schema<IUserData>(
       trim: true,
       unique: true,
     },
-
     emailId: {
       type: String,
       required: true,
@@ -34,13 +29,11 @@ const UserSchema: Schema<IUserData> = new Schema<IUserData>(
       trim: true,
       lowercase: true,
     },
-
     fullName: {
       type: String,
       required: true,
       trim: true,
     },
-
     age: {
       type: Number,
       required: true,
@@ -54,25 +47,27 @@ const UserSchema: Schema<IUserData> = new Schema<IUserData>(
       type: [String],
       default: [],
     },
-
-    // avatar: {
-    //   access_url: {
-    //     type: String,
-    //     required: true,
-    //   },
-    //   public_key: {
-    //     type: String,
-    //     required: true,
-    //   },
-    // },
+    paymentHistory: {
+      type: [String],
+      default: [],
+    },
+    resumeCredits: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    activePlan: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-// 4. Model creation with protection against model re-compilation
 const UserModel: Model<IUserData> =
+  mongoose.models.auth_user ||
   mongoose.models.users_data ||
   mongoose.model<IUserData>("auth_user", UserSchema);
 

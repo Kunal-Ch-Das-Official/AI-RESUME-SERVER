@@ -15,7 +15,6 @@ const userLoginController: IController<typeof userLoginSchema> = async (
     );
   }
 
-
   // Find user: prioritize emailId if given, otherwise use userName
   const query = emailId ? { emailId: emailId } : { userName: userName };
   const user = await UserModel.findOne(query);
@@ -47,6 +46,10 @@ const userLoginController: IController<typeof userLoginSchema> = async (
     userName: user.userName,
     userEmail: user.emailId,
     fullName: user.fullName,
+    myResume: user.myResume,
+    paymentHistory: user.paymentHistory,
+    resumeCredits: user.resumeCredits,
+    activePlan: user.activePlan,
   };
 
   // Generate Access & Refresh tokens

@@ -20,6 +20,7 @@
     "ioredis": "^5.4.1",
     "mongoose": "^8.5.4",
     "nodemailer": "^10.0.10",
+    "razorpay": "^2.9.8",
     "sharp": "^0.35.4",
     "streamifier": "^0.1.1",
     "subatom": "^2.0.3",
