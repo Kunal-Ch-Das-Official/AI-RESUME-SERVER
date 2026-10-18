@@ -1,0 +1,2 @@
+import{Resume as o}from"../../models/resumeInfo.js";const t=async r=>{const{ids:e}=r.query;try{if(!Array.isArray(e)||e.length===0)return r.helper.bad_request("An array of resume IDs is required.");const s=await o.find({_id:{$in:e}});return r.response.status(200).json(s)}catch(s){return r.helper.internal_server_error(s.message)}};var m=t;export{m as default};
+//# sourceMappingURL=fetchMultipleResume.controller.js.map

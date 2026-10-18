@@ -1,0 +1,2 @@
+import t from"../../config/cloudinaryConfig.js";const n=async o=>{const r=["image","video","raw"];for(const e of r)try{await t.api.delete_resources(o,{type:"upload",resource_type:e}).then(()=>{console.log({message:`Requested files of type '${e}' have been removed from Cloudinary!`,result:o})})}catch(s){console.error({issue:s.message,details:`Unable to destroy requested resources of type '${e}'!`,issueOrigin:"custom single destroyer."})}};var i=n;export{i as default};
+//# sourceMappingURL=cloudDestroyerMany.js.map

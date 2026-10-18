@@ -15,12 +15,12 @@ import {
 import envConfig from "../config/envConfig.js";
 
 const defaultLogger: Logger = {
-  info: (msg, meta) => console.log('[Redis] ' + msg, meta ?? ''),
-  warn: (msg, meta) => console.warn('[Redis] ' + msg, meta ?? ''),
-  error: (msg, meta) => console.error('[Redis] ' + msg, meta ?? ''),
+  info: (msg, meta) => console.log("[Redis] " + msg, meta ?? ""),
+  warn: (msg, meta) => console.warn("[Redis] " + msg, meta ?? ""),
+  error: (msg, meta) => console.error("[Redis] " + msg, meta ?? ""),
   debug: (msg, meta) => {
-    if (envConfig.REDIS_DEBUG === 'true')
-      console.debug('[Redis] ' + msg, meta ?? '');
+    if (envConfig.REDIS_DEBUG === "true")
+      console.debug("[Redis] " + msg, meta ?? "");
   },
 };
 
@@ -73,7 +73,7 @@ export class RedisClient {
       enableAutoPipelining: true,
       enableOfflineQueue: true,
       connectTimeout: this.config.connectTimeoutMs,
-      retryStrategy: (attempt: never) => {
+      retryStrategy: (attempt: number) => {
         // exponential backoff with jitter, capped at 10s
         const base = Math.min(1000 * 2 ** attempt, 10_000);
         const jitter = Math.floor(Math.random() * 200);
@@ -503,56 +503,69 @@ export class RedisClient {
   // Lua scripting
   // ============================================================
 
+  /**
+   * Runs Lua script. Automatically prefixes KEYS with this.prefix if configured,
+   * resolving ioredis's default behavior where eval() ignores keyPrefix.
+   */
   async eval(
     script: string,
     keys: string[] = [],
     args: (string | number)[] = [],
   ): Promise<unknown> {
-    return this.client.eval(script, keys.length, ...keys, ...args);
+    const actualKeys = this.prefix
+      ? keys.map((k) => (k.startsWith(this.prefix) ? k : this.prefix + k))
+      : keys;
+    return this.client.eval(script, actualKeys.length, ...actualKeys, ...args);
   }
 
   // ============================================================
   // Distributed lock (single-node SET NX PX + token-safe release)
-  // For multi-node quorum guarantees, layer Redlock on top of getRawClient().
   // ============================================================
 
   async acquireLock(key: string, ttlMs = 5000): Promise<LockHandle | null> {
     const token = crypto.randomUUID();
-    const lockKey = 'lock:' + key;
+    const lockKey = "lock:" + key;
     const result = await this.client.set(lockKey, token, "PX", ttlMs, "NX");
     return result === "OK" ? { key: lockKey, token } : null;
   }
 
   async releaseLock(handle: LockHandle): Promise<boolean> {
-    // Compare-and-delete must be atomic, or we might delete a lock
-    // acquired by someone else after ours expired.
-    const script =
-      'if redis.call("GET", KEYS[1]) == ARGV[1] then'
- +
-      '  return redis.call("DEL", KEYS[1])'
- +
-      'else'
- +
-      '  return 0'
- +
-      'end';
-    const result = await this.eval(script, [handle.key], [handle.token]);
-    return result === 1;
+    try {
+      // Use clean template literal with explicit whitespace/newlines to avoid malformed number syntax errors
+      const script = `
+        if redis.call("GET", KEYS[1]) == ARGV[1] then
+          return redis.call("DEL", KEYS[1])
+        else
+          return 0
+        end
+      `;
+      const result = await this.eval(script, [handle.key], [handle.token]);
+      return result === 1;
+    } catch (err) {
+      this.log.error("Failed to release lock for key: " + handle.key, {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return false;
+    }
   }
 
   async extendLock(handle: LockHandle, ttlMs: number): Promise<boolean> {
-    const script =
-      'if redis.call("GET", KEYS[1]) == ARGV[1] then'
- +
-      '  return redis.call("PEXPIRE", KEYS[1], ARGV[2])'
- +
-      'else'
- +
-      '  return 0'
- +
-      'end';
-    const result = await this.eval(script, [handle.key], [handle.token, ttlMs]);
-    return result === 1;
+    try {
+      const script = `
+        if redis.call("GET", KEYS[1]) == ARGV[1] then
+          return redis.call("PEXPIRE", KEYS[1], ARGV[2])
+        else
+          return 0
+        end
+      `;
+      const result = await this.eval(script, [handle.key], [handle.token, ttlMs]);
+      return result === 1;
+    } catch (err) {
+      this.log.error("Failed to extend lock for key: " + handle.key, {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return false;
+    }
   }
 
   /** Runs fn while holding the lock, then always releases it. Throws RedisLockError if not acquired. */
@@ -562,8 +575,9 @@ export class RedisClient {
     fn: () => Promise<T>,
   ): Promise<T> {
     const lock = await this.acquireLock(key, ttlMs);
-    if (!lock)
-      throw new RedisLockError('Could not acquire lock for key: ' + key);
+    if (!lock) {
+      throw new RedisLockError("Could not acquire lock for key: " + key);
+    }
     try {
       return await fn();
     } finally {
@@ -580,21 +594,17 @@ export class RedisClient {
     limit: number,
     windowSeconds: number,
   ): Promise<RateLimitResult> {
-    const script =
-      'local current = redis.call("INCR", KEYS[1])'
- +
-      'if current == 1 then'
- +
-      '  redis.call("EXPIRE", KEYS[1], ARGV[1])'
- +
-      'end'
- +
-      'local ttl = redis.call("TTL", KEYS[1])'
- +
-      'return {current, ttl}';
+    const script = `
+      local current = redis.call("INCR", KEYS[1])
+      if current == 1 then
+        redis.call("EXPIRE", KEYS[1], ARGV[1])
+      end
+      local ttl = redis.call("TTL", KEYS[1])
+      return {current, ttl}
+    `;
     const [current, ttl] = (await this.eval(
       script,
-      ['ratelimit:' + key],
+      ["ratelimit:" + key],
       [windowSeconds],
     )) as [number, number];
 
@@ -627,23 +637,20 @@ export class RedisClient {
   // Safe bulk operations (SCAN-based — never blocks Redis like KEYS does)
   // ============================================================
 
+  private get prefix(): string {
+    return this.config.keyPrefix ?? "";
+  }
+
   async deleteByPattern(pattern: string): Promise<number> {
-    let cursor = "0";
+    const keys = await this.scanKeys(pattern);
     let deleted = 0;
-    do {
-      const [nextCursor, keys] = await this.client.scan(
-        cursor,
-        "MATCH",
-        pattern,
-        "COUNT",
-        100,
-      );
-      cursor = nextCursor;
-      if (keys.length) deleted += await this.client.del(...keys);
-    } while (cursor !== "0");
+    for (let i = 0; i < keys.length; i += 500) {
+      deleted += await this.client.del(...keys.slice(i, i + 500));
+    }
     return deleted;
   }
 
+  /** Returns keys WITHOUT the configured prefix, so they can be passed straight back to get/del. */
   async scanKeys(pattern: string): Promise<string[]> {
     let cursor = "0";
     const found: string[] = [];
@@ -651,12 +658,18 @@ export class RedisClient {
       const [nextCursor, keys] = await this.client.scan(
         cursor,
         "MATCH",
-        pattern,
+        this.prefix + pattern,
         "COUNT",
         100,
       );
       cursor = nextCursor;
-      found.push(...keys);
+      for (const k of keys) {
+        found.push(
+          this.prefix && k.startsWith(this.prefix)
+            ? k.slice(this.prefix.length)
+            : k,
+        );
+      }
     } while (cursor !== "0");
     return found;
   }
@@ -697,4 +710,3 @@ export class RedisClient {
     }
   }
 }
-    

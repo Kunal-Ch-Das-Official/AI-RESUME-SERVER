@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/controllers/auth/logout.controller.ts"],
+  "sourcesContent": ["import { IController } from \"subatom\";\n\nconst logoutController: IController = async (ctx) => {\n    // Clear both access and refresh token cookies\n    ctx.clearCookie(\"access-token\");\n    ctx.clearCookie(\"refresh-token\");\n\n    // Send a success response back to the client\n    return ctx.status(200).json({\n        message: \"Logged out successfully\"\n    });\n};\n\nexport default logoutController;"],
+  "mappings": "AAEA,MAAMA,EAAgC,MAAOC,IAEzCA,EAAI,YAAY,cAAc,EAC9BA,EAAI,YAAY,eAAe,EAGxBA,EAAI,OAAO,GAAG,EAAE,KAAK,CACxB,QAAS,yBACb,CAAC,GAGL,IAAOC,EAAQF",
+  "names": ["logoutController", "ctx", "logout_controller_default"]
+}

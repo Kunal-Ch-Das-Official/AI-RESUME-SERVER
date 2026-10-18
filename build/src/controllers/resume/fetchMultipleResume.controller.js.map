@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/controllers/resume/fetchMultipleResume.controller.ts"],
+  "sourcesContent": ["import { IController } from \"subatom\";\nimport { MultipleResumeIdSchema } from \"../../schema/resume.schema.js\";\nimport { Resume } from \"../../models/resumeInfo.js\";\n\nconst fetchMultipleResumeController: IController<\n  typeof MultipleResumeIdSchema\n> = async (ctx) => {\n  const { ids } = ctx.query;\n\n  try {\n    if (!Array.isArray(ids) || ids.length === 0) {\n      return ctx.helper.bad_request(\"An array of resume IDs is required.\");\n    }\n\n    const resumes = await Resume.find({\n      _id: { $in: ids },\n    });\n\n    return ctx.response.status(200).json(resumes);\n  } catch (error: unknown) {\n    return ctx.helper.internal_server_error((error as Error).message);\n  }\n};\n\nexport default fetchMultipleResumeController;\n"],
+  "mappings": "AAEA,OAAS,UAAAA,MAAc,6BAEvB,MAAMC,EAEF,MAAOC,GAAQ,CACjB,KAAM,CAAE,IAAAC,CAAI,EAAID,EAAI,MAEpB,GAAI,CACF,GAAI,CAAC,MAAM,QAAQC,CAAG,GAAKA,EAAI,SAAW,EACxC,OAAOD,EAAI,OAAO,YAAY,qCAAqC,EAGrE,MAAME,EAAU,MAAMJ,EAAO,KAAK,CAChC,IAAK,CAAE,IAAKG,CAAI,CAClB,CAAC,EAED,OAAOD,EAAI,SAAS,OAAO,GAAG,EAAE,KAAKE,CAAO,CAC9C,OAASC,EAAgB,CACvB,OAAOH,EAAI,OAAO,sBAAuBG,EAAgB,OAAO,CAClE,CACF,EAEA,IAAOC,EAAQL",
+  "names": ["Resume", "fetchMultipleResumeController", "ctx", "ids", "resumes", "error", "fetchMultipleResume_controller_default"]
+}

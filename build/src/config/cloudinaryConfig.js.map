@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/config/cloudinaryConfig.ts"],
+  "sourcesContent": ["import envConfig from \"./envConfig.js\";\nimport { v2 as cloudinary } from \"cloudinary\";\n\n//! Create cloudinary config\ncloudinary.config({\n  cloud_name: envConfig.CLOUDINARY_CLOUD_NAME,\n  api_key: envConfig.CLOUDINARY_API_KEY,\n  api_secret: envConfig.CLOUDINARY_CLOUD_SECRET,\n});\nconst cloudinaryConfig = cloudinary;\nexport default cloudinaryConfig;\n"],
+  "mappings": "AAAA,OAAOA,MAAe,iBACtB,OAAS,MAAMC,MAAkB,aAEjC;AACAA,EAAW,OAAO,CAChB,WAAYD,EAAU,sBACtB,QAASA,EAAU,mBACnB,WAAYA,EAAU,uBACxB,CAAC,EACD,MAAME,EAAmBD,EACzB,IAAOE,EAAQD",
+  "names": ["envConfig", "cloudinary", "cloudinaryConfig", "cloudinaryConfig_default"]
+}

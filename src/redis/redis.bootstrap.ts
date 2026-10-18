@@ -1,8 +1,15 @@
 import { RedisClient, loadRedisConfig, RedisConfigError } from "./index.js";
 
+let bootPromise: Promise<RedisClient> | null = null;
+let shutdownRegistered = false;
 
+/** Idempotent: safe to call from main.ts AND from the auto-run at the bottom. */
+export function bootstrapRedis(): Promise<RedisClient> {
+  bootPromise ??= doBootstrap();
+  return bootPromise;
+}
 
-export async function bootstrapRedis(): Promise<RedisClient> {
+async function doBootstrap(): Promise<RedisClient> {
   let config;
   try {
     config = loadRedisConfig();
@@ -25,24 +32,23 @@ export async function bootstrapRedis(): Promise<RedisClient> {
     );
 
     if (config.required) {
-      // Redis is mandatory for this service — do not boot without it.
       console.error("[main.ts] REDIS_REQUIRED=true → aborting startup");
       process.exit(1);
     }
 
-    // Fallback: the app continues in degraded mode. Anything reading/writing
-    // through RedisClient should call redis.isHealthy() first (or just let
-    // ioredis's offline queue + retryStrategy pick the connection back up —
-    // commands issued while disconnected are queued and flushed on reconnect).
     console.warn(
       "[main.ts] ⚠️  Continuing startup without Redis (degraded / cache-less mode)",
     );
   }
 
+  registerGracefulShutdown(redis);
   return redis;
 }
 
 export function registerGracefulShutdown(redis: RedisClient): void {
+  if (shutdownRegistered) return;
+  shutdownRegistered = true;
+
   const shutdown = async (signal: string) => {
     console.log("[main.ts] Received " + signal + ", shutting down gracefully...");
     try {

@@ -87,6 +87,7 @@ const userLoginController: IController<typeof userLoginSchema> = async (
       userName: user.userName,
       emailId: user.emailId,
       fullName: user.fullName,
+      resumeCredits: user.resumeCredits
     },
   });
 };

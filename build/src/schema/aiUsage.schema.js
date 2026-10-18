@@ -1,0 +1,2 @@
+import e from"subatom-infer";const i={body:{userId:e.string().min(1),resumeId:e.string().min(1),featureKey:e.string()}},s={params:{resumeId:e.string().min(1)},query:{userId:e.string().min(1)}},t={body:{userId:e.string().min(1),resumeId:e.string().min(1),draftId:e.string()}};export{t as finalizeResumeAiSchema,s as getAiUsageParamSchema,i as trackAiFeatureSchema};
+//# sourceMappingURL=aiUsage.schema.js.map

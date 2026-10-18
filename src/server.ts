@@ -4,6 +4,8 @@ import resumeRouter from "./routes/resume.route.js";
 import authRouter from "./routes/auth.route.js";
 import envConfig from "./config/envConfig.js";
 import paymentRouter from "./routes/payment.route.js";
+import aiUsageRouter from "./routes/aiUsage.route.js";
+import contactEnqueryRouter from "./routes/contact.route.js";
 
 const server: ISubatom = new Subatom();
 
@@ -37,6 +39,9 @@ server.get("/metrics", async (_req:IRequest, res:IResponse) => {
 server.use("/api/v1/auth", authRouter)
 server.use("/api/v1/resume", resumeRouter)
 server.use("/api/v1/payment", paymentRouter);
+server.use("/api/v1/track", aiUsageRouter);
+server.use("/api/v1/contact", contactEnqueryRouter)
+
 
 // API Documentation at /docs
 SubAtomDocs(server, {
