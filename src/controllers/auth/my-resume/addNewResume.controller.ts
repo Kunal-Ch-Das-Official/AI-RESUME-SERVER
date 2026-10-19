@@ -13,16 +13,6 @@ const addNewResumeController: IController<typeof myResumeSchema> = async (
     return ctx.helper.not_found("User not found.");
   }
 
-  const resumesCreated = user.myResume?.length || 0;
-  const resumeCredits = user.resumeCredits || 0;
-
-  // Quota check: reject request when existing resumes reach or exceed allotted credits
-  if (resumesCreated >= resumeCredits) {
-    return ctx.helper.forbidden(
-      "Resume creation quota exhausted. Please upgrade your plan.",
-    );
-  }
-
   // Atomically append new resume ID
   const updatedUser = await UserModel.findByIdAndUpdate(
     userId,

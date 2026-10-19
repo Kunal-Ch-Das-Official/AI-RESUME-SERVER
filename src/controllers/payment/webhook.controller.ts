@@ -4,6 +4,7 @@ import PaymentModel from "../../models/paymentData.js";
 import UserModel from "../../models/usersData.js";
 import envConfig from "../../config/envConfig.js";
 import { getPlanById } from "../../config/plans.js";
+import sendPaymentConfirmationEmail from "../../emails/sendPaymentConfirmationEmail.js";
 
 const razorpayWebhookController: IController = async (ctx) => {
   const webhookSecret = envConfig.RAZORPAY_WEBHOOK_SECRET;
@@ -70,6 +71,9 @@ const razorpayWebhookController: IController = async (ctx) => {
         $inc: { resumeCredits: creditsToAdd },
         $set: { activePlan: paymentRecord.planId },
       });
+
+      // Send the receipt from the server even if the customer closes the browser.
+      await sendPaymentConfirmationEmail(paymentRecord._id.toString());
     }
   }
 

@@ -12,6 +12,9 @@ export interface IPayment {
   signature: string | null;
   creditsGranted: number;
   status: PaymentStatus;
+  receiptEmailStatus: "pending" | "sending" | "sent" | "failed";
+  receiptEmailSentAt?: Date | null;
+  receiptEmailError?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -69,6 +72,14 @@ const PaymentSchema: Schema<IPaymentData> = new Schema<IPaymentData>(
       default: "created",
       index: true,
     },
+    receiptEmailStatus: {
+      type: String,
+      enum: ["pending", "sending", "sent", "failed"],
+      default: "pending",
+      index: true,
+    },
+    receiptEmailSentAt: { type: Date, default: null },
+    receiptEmailError: { type: String, default: null },
   },
   {
     timestamps: true,

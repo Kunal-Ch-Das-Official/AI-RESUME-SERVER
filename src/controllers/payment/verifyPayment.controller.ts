@@ -5,6 +5,7 @@ import { getPlanById } from "../../config/plans.js";
 import PaymentModel from "../../models/paymentData.js";
 import UserModel from "../../models/usersData.js";
 import envConfig from "../../config/envConfig.js";
+import sendPaymentConfirmationEmail from "../../emails/sendPaymentConfirmationEmail.js";
 
 const verifyPaymentController: IController<typeof verifyPaymentSchema> = async (
   ctx,
@@ -62,6 +63,8 @@ const verifyPaymentController: IController<typeof verifyPaymentSchema> = async (
 
   // 3. Replay attack check: If order is already paid, return 200 OK immediately
   if (paymentRecord.status === "paid") {
+    // The email helper is idempotent and also retries a previously failed email.
+    await sendPaymentConfirmationEmail(paymentRecord._id.toString());
     const existingUser = await UserModel.findById(userId);
     return ctx.status(200).json({
       success: true,
@@ -88,6 +91,7 @@ const verifyPaymentController: IController<typeof verifyPaymentSchema> = async (
   );
 
   if (!updatedPayment) {
+    await sendPaymentConfirmationEmail(paymentRecord._id.toString());
     const existingUser = await UserModel.findById(userId);
     return ctx.status(200).json({
       success: true,
@@ -113,6 +117,10 @@ const verifyPaymentController: IController<typeof verifyPaymentSchema> = async (
   if (!updatedUser) {
     return ctx.helper.not_found("User record not found.");
   }
+
+  // Payment and credits are committed before attempting email delivery.
+  // Email failure must not turn a successful payment into a failed response.
+  await sendPaymentConfirmationEmail(updatedPayment._id.toString());
 
   const resumesUsed = updatedUser.myResume?.length || 0;
   const remainingCredits = Math.max(0, updatedUser.resumeCredits - resumesUsed);
