@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/schema/aiUsage.schema.ts"],
-  "sourcesContent": ["import infer from \"subatom-infer\";\n\n// Validates POST /api/v1/resumes/track-ai\nexport const trackAiFeatureSchema = {\n  body: {\n    userId: infer.string().min(1),\n    resumeId: infer.string().min(1),\n    featureKey: infer.string(), // validated against an allow-list in the controller\n  },\n};\n\n// Validates GET /api/v1/resumes/:resumeId/ai-usage\nexport const getAiUsageParamSchema = {\n  params: {\n    resumeId: infer.string().min(1),\n  },\n  query: {\n    userId: infer.string().min(1),\n  },\n};\n\n// Validates POST /api/v1/resumes/finalize-and-deduct\nexport const finalizeResumeAiSchema = {\n  body: {\n    userId: infer.string().min(1),\n    resumeId: infer.string().min(1),\n    // Client draft id (send \"\" if none). Lets the server merge usage tracked\n    // before the resume had a real Mongo id.\n    draftId: infer.string(),\n  },\n};\n"],
-  "mappings": "AAAA,OAAOA,MAAW,gBAGX,MAAMC,EAAuB,CAClC,KAAM,CACJ,OAAQD,EAAM,OAAO,EAAE,IAAI,CAAC,EAC5B,SAAUA,EAAM,OAAO,EAAE,IAAI,CAAC,EAC9B,WAAYA,EAAM,OAAO,CAC3B,CACF,EAGaE,EAAwB,CACnC,OAAQ,CACN,SAAUF,EAAM,OAAO,EAAE,IAAI,CAAC,CAChC,EACA,MAAO,CACL,OAAQA,EAAM,OAAO,EAAE,IAAI,CAAC,CAC9B,CACF,EAGaG,EAAyB,CACpC,KAAM,CACJ,OAAQH,EAAM,OAAO,EAAE,IAAI,CAAC,EAC5B,SAAUA,EAAM,OAAO,EAAE,IAAI,CAAC,EAG9B,QAASA,EAAM,OAAO,CACxB,CACF",
-  "names": ["infer", "trackAiFeatureSchema", "getAiUsageParamSchema", "finalizeResumeAiSchema"]
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/config/razorpay.ts"],
-  "sourcesContent": ["import Razorpay from \"razorpay\";\nimport envConfig from \"./envConfig.js\";\n\nconst razorpay = new Razorpay({\n  key_id: envConfig.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || \"\",\n  key_secret:\n    envConfig.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET || \"\",\n});\n\nexport default razorpay;\n"],
-  "mappings": "AAAA,OAAOA,MAAc,WACrB,OAAOC,MAAe,iBAEtB,MAAMC,EAAW,IAAIF,EAAS,CAC5B,OAAQC,EAAU,iBAAmB,QAAQ,IAAI,iBAAmB,GACpE,WACEA,EAAU,qBAAuB,QAAQ,IAAI,qBAAuB,EACxE,CAAC,EAED,IAAOE,EAAQD",
-  "names": ["Razorpay", "envConfig", "razorpay", "razorpay_default"]
-}

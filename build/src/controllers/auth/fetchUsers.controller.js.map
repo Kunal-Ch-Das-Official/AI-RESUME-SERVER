@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../src/controllers/auth/fetchUsers.controller.ts"],
-  "sourcesContent": ["import { IController } from \"subatom\";\nimport UserModel from \"../../models/usersData.js\";\nimport { fetchUserSchema } from \"../../schema/auth.schema.js\";\n\n\nconst fetchUsersController: IController<typeof fetchUserSchema> = async (ctx) => {\n  try {\n    if (ctx.params.userId) {\n      const fetchUserById = await UserModel.findById(ctx.params.userId);\n      if (!fetchUserById) {\n        return ctx.helper.not_found(\"Requested user not found..\");\n      } else {\n        return ctx.helper.success(fetchUserById);\n      }\n    } else {\n      const finaAllUser = await UserModel.find();\n      return ctx.helper.success(finaAllUser);\n    }\n  } catch (error: unknown) {\n    return ctx.helper.internal_server_error((error as Error).message);\n  }\n};\n\nexport default fetchUsersController;\n"],
-  "mappings": "AACA,OAAOA,MAAe,4BAItB,MAAMC,EAA4D,MAAOC,GAAQ,CAC/E,GAAI,CACF,GAAIA,EAAI,OAAO,OAAQ,CACrB,MAAMC,EAAgB,MAAMH,EAAU,SAASE,EAAI,OAAO,MAAM,EAChE,OAAKC,EAGID,EAAI,OAAO,QAAQC,CAAa,EAFhCD,EAAI,OAAO,UAAU,4BAA4B,CAI5D,KAAO,CACL,MAAME,EAAc,MAAMJ,EAAU,KAAK,EACzC,OAAOE,EAAI,OAAO,QAAQE,CAAW,CACvC,CACF,OAASC,EAAgB,CACvB,OAAOH,EAAI,OAAO,sBAAuBG,EAAgB,OAAO,CAClE,CACF,EAEA,IAAOC,EAAQL",
-  "names": ["UserModel", "fetchUsersController", "ctx", "fetchUserById", "finaAllUser", "error", "fetchUsers_controller_default"]
-}

@@ -1,2 +1,0 @@
-import n from"../../models/paymentData.js";const o=async r=>{const t=r.user.id;try{if(!t)return r.response.status(401).json({message:"Authentication required."});const e=await n.find({userId:t}).sort({createdAt:-1});return r.response.status(200).json(e)}catch(e){return r.helper.internal_server_error(e instanceof Error?e.message:"Could not fetch payment records.")}};var l=o;export{l as default};
-//# sourceMappingURL=fetchMultiplePayment.controller.js.map

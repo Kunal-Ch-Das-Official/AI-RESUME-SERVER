@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/schema/payment.schema.ts"],
-  "sourcesContent": ["import infer from \"subatom-infer\";\n\nexport const createOrderSchema = {\n  body: {\n    planId: infer.string(),\n  },\n};\n\nexport const verifyPaymentSchema = {\n  body: {\n    razorpay_order_id: infer.string(),\n    razorpay_payment_id: infer.string(),\n    razorpay_signature: infer.string(),\n    planId: infer.string(),\n  },\n};\n"],
-  "mappings": "AAAA,OAAOA,MAAW,gBAEX,MAAMC,EAAoB,CAC/B,KAAM,CACJ,OAAQD,EAAM,OAAO,CACvB,CACF,EAEaE,EAAsB,CACjC,KAAM,CACJ,kBAAmBF,EAAM,OAAO,EAChC,oBAAqBA,EAAM,OAAO,EAClC,mBAAoBA,EAAM,OAAO,EACjC,OAAQA,EAAM,OAAO,CACvB,CACF",
-  "names": ["infer", "createOrderSchema", "verifyPaymentSchema"]
-}

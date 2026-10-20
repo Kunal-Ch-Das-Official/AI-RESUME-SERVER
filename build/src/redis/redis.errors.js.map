@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../src/redis/redis.errors.ts"],
-  "sourcesContent": ["export class RedisNotInitializedError extends Error {\n  constructor() {\n    super('RedisClient not initialized. Call RedisClient.init(config) before getInstance().');\n    this.name = 'RedisNotInitializedError';\n  }\n}\n\nexport class RedisConnectionError extends Error {\n  constructor(cause: unknown) {\n    const reason = cause instanceof Error ? cause.message : String(cause);\n    super(`Failed to connect to Redis: ${reason}`);\n    this.name = 'RedisConnectionError';\n    this.cause = cause;\n  }\n}\n\nexport class RedisLockError extends Error {\n  constructor(message: string) {\n    super(message);\n    this.name = 'RedisLockError';\n  }\n}\n\nexport class RedisConfigError extends Error {\n  constructor(message: string) {\n    super(message);\n    this.name = 'RedisConfigError';\n  }\n}"],
-  "mappings": "AAAO,MAAMA,UAAiC,KAAM,CAClD,aAAc,CACZ,MAAM,kFAAkF,EACxF,KAAK,KAAO,0BACd,CACF,CAEO,MAAMC,UAA6B,KAAM,CAC9C,YAAYC,EAAgB,CAC1B,MAAMC,EAASD,aAAiB,MAAQA,EAAM,QAAU,OAAOA,CAAK,EACpE,MAAM,+BAA+BC,CAAM,EAAE,EAC7C,KAAK,KAAO,uBACZ,KAAK,MAAQD,CACf,CACF,CAEO,MAAME,UAAuB,KAAM,CACxC,YAAYC,EAAiB,CAC3B,MAAMA,CAAO,EACb,KAAK,KAAO,gBACd,CACF,CAEO,MAAMC,UAAyB,KAAM,CAC1C,YAAYD,EAAiB,CAC3B,MAAMA,CAAO,EACb,KAAK,KAAO,kBACd,CACF",
-  "names": ["RedisNotInitializedError", "RedisConnectionError", "cause", "reason", "RedisLockError", "message", "RedisConfigError"]
-}

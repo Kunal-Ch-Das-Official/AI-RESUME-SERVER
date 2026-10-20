@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../src/controllers/auth/loggedInUser.controller.ts"],
-  "sourcesContent": ["import { IController } from \"subatom\";\n\n\nconst loggedInUserController: IController = async (ctx) => {\n  if (!ctx.user)\n    return ctx.helper.no_content(\"User does not exist in context.\");\n\n  return ctx.status(200).json(ctx.user);\n};\n\nexport default loggedInUserController;\n"],
-  "mappings": "AAGA,MAAMA,EAAsC,MAAOC,GAC5CA,EAAI,KAGFA,EAAI,OAAO,GAAG,EAAE,KAAKA,EAAI,IAAI,EAF3BA,EAAI,OAAO,WAAW,iCAAiC,EAKlE,IAAOC,EAAQF",
-  "names": ["loggedInUserController", "ctx", "loggedInUser_controller_default"]
-}

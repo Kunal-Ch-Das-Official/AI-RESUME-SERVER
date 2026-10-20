@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../subatom.config.ts"],
-  "sourcesContent": ["import { configEnv } from \"subatom\";\nconfigEnv();\n\nimport { defineConfig } from \"subatom\";\n\nexport default defineConfig({\n      port: Number(process.env.PORT),\n      host: process.env.HOST,\n      outDir: \"build\",\n      sourcemap: true,\n      minify: true,\n      entry:\"main.ts\",\n      watch: {\n          extensions: [\"ts\", \"tsx\", \"js\", \"jsx\"],\n          debounceMs: 500,\n          ignore: [\"**/logs/**\"],\n      }\n});"],
-  "mappings": "AAAA,OAAS,aAAAA,MAAiB,UAC1BA,EAAU,EAEV,OAAS,gBAAAC,MAAoB,UAE7B,IAAOC,EAAQD,EAAa,CACtB,KAAM,OAAO,QAAQ,IAAI,IAAI,EAC7B,KAAM,QAAQ,IAAI,KAClB,OAAQ,QACR,UAAW,GACX,OAAQ,GACR,MAAM,UACN,MAAO,CACH,WAAY,CAAC,KAAM,MAAO,KAAM,KAAK,EACrC,WAAY,IACZ,OAAQ,CAAC,YAAY,CACzB,CACN,CAAC",
-  "names": ["configEnv", "defineConfig", "subatom_config_default"]
-}

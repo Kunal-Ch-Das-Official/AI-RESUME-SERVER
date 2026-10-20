@@ -1,2 +1,0 @@
-import{hash as m}from"subatom";import u from"../../models/usersData.js";const c=async e=>{const{userName:s,emailId:t,fullName:a,age:o,password:n}=e.body,l=null,i=m.password(n,{keylen:32}),r=await u.create({userName:s,emailId:t,fullName:a,age:o,avatar:l,password:i});return r?e.helper.success({success:!0,message:"User registered successfully",data:r}):e.helper.not_implemented("Something went wrong, please try again later.")};var w=c;export{w as default};
-//# sourceMappingURL=userReg.controller.js.map
